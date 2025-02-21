@@ -21,10 +21,10 @@ if defined latest (
     REM Get the timestamp of the latest backup
     for /f "usebackq" %%t in (`powershell -Command "(Get-Item '%backup_dir%\!latest!').LastWriteTime.ToString('yyyy-MM-ddTHH:mm:ss')"`) do set "timestamp=%%t"
     echo Creating incremental backup with files newer than !timestamp!
-    "%sevenZip%" a -mx9 -t7z -ssw -r -i! -tn!timestamp! "%backup_dir%\Backup_!datepart!.7z" "%source_dir%\*"
+    "%sevenZip%" a -mx9 -t7z -ssw -r "-tn!timestamp!" "%backup_dir%\Backup_!datepart!.7z" "%source_dir%\*"
 ) else (
     echo No existing backup. Creating full backup...
-    "%sevenZip%" a -mx9 -t7z -ssw -r -i! "%backup_dir%\Backup_!datepart!.7z" "%source_dir%\*"
+    "%sevenZip%" a -mx9 -t7z -ssw -r "%backup_dir%\Backup_!datepart!.7z" "%source_dir%\*"
 )
 
 endlocal
