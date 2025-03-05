@@ -1,0 +1,36 @@
+//CREATEVS JOB (ACCT),'CREATE VSAM FILES',CLASS=A,MSGCLASS=X
+//STEP1    EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=*
+//SYSIN    DD *
+
+  /* PRIMARY VSAM FILE (FIELD STRUCTURE RULES) */
+  DEFINE CLUSTER (NAME(VALID.VSAMFILE)        -
+          VOLUMES(&VOLUME)                   -
+          KEYS(11 0)                         - /* Key = VAL-FILE-ID(1) + VAL-FIELD-NAME(10) */
+          RECORDSIZE(21 21)                   - /* Record length = 21 bytes */
+          INDEXED                             -
+          REUSE                               -
+          STORCLAS(STORAGE)                   -
+          SHAREOPTIONS(2 3))                  -
+   DATA (NAME(VALID.VSAMFILE.DATA))           -
+   INDEX (NAME(VALID.VSAMFILE.INDEX))
+
+  /* SECONDARY VSAM FILE (CONTENT RULES) */
+  DEFINE CLUSTER (NAME(VALID.CONTENTVSAM)     -
+          VOLUMES(&VOLUME)                   -
+          KEYS(11 0)                         - /* Key = CONTENT-FILE-ID(1) + CONTENT-FIELD-NAME(10) */
+          RECORDSIZE(121 121)                - /* Record length = 121 bytes */
+          INDEXED                             -
+          REUSE                               -
+          STORCLAS(STORAGE)                   -
+          SHAREOPTIONS(2 3))                  -
+   DATA (NAME(VALID.CONTENTVSAM.DATA))        -
+   INDEX (NAME(VALID.CONTENTVSAM.INDEX))
+
+/*
+//*
+//STEP2    EXEC PGM=IEFBR14
+//DD1      DD DSN=VALID.VSAMFILE,DISP=(OLD,CATLG),
+//            SPACE=(TRK,0)
+//DD2      DD DSN=VALID.CONTENTVSAM,DISP=(OLD,CATLG),
+//            SPACE=(TRK,0)
